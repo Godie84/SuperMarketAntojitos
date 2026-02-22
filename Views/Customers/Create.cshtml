@@ -1,0 +1,93 @@
+﻿@model Customer
+@{
+    ViewData["Title"] = "Nuevo Cliente";
+    var returnUrl = ViewContext.HttpContext.Request.Query["returnUrl"].ToString();
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white d-flex align-items-center gap-2">
+                <i class="bi bi-person-plus"></i>
+                <span>Registrar Nuevo Cliente</span>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" asp-route-returnUrl="@returnUrl" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
+
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <input asp-for="IdentificationNumber" class="form-control"
+                                       placeholder="ID Number" maxlength="20" />
+                                <label asp-for="IdentificationNumber">
+                                    <i class="bi bi-person-badge me-1"></i>No. Identificación
+                                </label>
+                                <span asp-validation-for="IdentificationNumber" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for="FirstName" class="form-control" placeholder="Nombre" />
+                                <label asp-for="FirstName">Nombre</label>
+                                <span asp-validation-for="FirstName" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for="LastName" class="form-control" placeholder="Apellido" />
+                                <label asp-for="LastName">Apellido</label>
+                                <span asp-validation-for="LastName" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <input asp-for="Address" class="form-control" placeholder="Dirección" />
+                                <label asp-for="Address">
+                                    <i class="bi bi-geo-alt me-1"></i>Dirección
+                                </label>
+                                <span asp-validation-for="Address" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for="Phone" class="form-control" placeholder="Teléfono"
+                                       type="tel" maxlength="15" />
+                                <label asp-for="Phone">
+                                    <i class="bi bi-telephone me-1"></i>Teléfono
+                                </label>
+                                <span asp-validation-for="Phone" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for="Email" class="form-control" placeholder="Correo"
+                                       type="email" />
+                                <label asp-for="Email">
+                                    <i class="bi bi-envelope me-1"></i>Correo
+                                </label>
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary flex-fill">
+                            <i class="bi bi-check-lg me-1"></i>Guardar y Continuar
+                        </button>
+                        <a href="@(string.IsNullOrEmpty(returnUrl) ? "/Customers" : returnUrl)"
+                           class="btn btn-outline-secondary flex-fill">
+                            <i class="bi bi-arrow-left me-1"></i>Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

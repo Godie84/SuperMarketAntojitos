@@ -1,0 +1,65 @@
+﻿@model Product
+@{
+    ViewData["Title"] = "New Product";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white d-flex align-items-center gap-2">
+                <i class="bi bi-box-seam"></i>
+                <span>New Product</span>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Code" class="form-control text-uppercase"
+                               placeholder="Code" maxlength="20" />
+                        <label asp-for="Code">
+                            <i class="bi bi-upc me-1"></i>Product Code
+                        </label>
+                        <span asp-validation-for="Code" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Name" class="form-control" placeholder="Name" />
+                        <label asp-for="Name">
+                            <i class="bi bi-tag me-1"></i>Product Name
+                        </label>
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="UnitPrice" class="form-control" type="number"
+                               placeholder="0.00" min="0" step="0.01" />
+                        <label asp-for="UnitPrice">
+                            <i class="bi bi-currency-dollar me-1"></i>Unit Price
+                        </label>
+                        <span asp-validation-for="UnitPrice" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-floating mb-4">
+                        <input asp-for="StockQuantity" class="form-control" type="number"
+                               placeholder="0" min="0" />
+                        <label asp-for="StockQuantity">
+                            <i class="bi bi-archive me-1"></i>Initial Stock
+                        </label>
+                        <span asp-validation-for="StockQuantity" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-fill">
+                            <i class="bi bi-check-lg me-1"></i>Save Product
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary flex-fill">
+                            <i class="bi bi-arrow-left me-1"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

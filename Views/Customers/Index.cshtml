@@ -1,0 +1,101 @@
+﻿@model IEnumerable<Customer>
+@{
+    ViewData["Title"] = "Customers";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold mb-0">Customers</h3>
+        <small class="text-muted">Registered customer directory</small>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-person-plus me-1"></i>New Customer
+    </a>
+</div>
+
+<!-- Stats -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card text-center py-3">
+            <div class="fw-bold fs-2 text-primary">@Model.Count()</div>
+            <div class="text-muted small">Total Customers</div>
+        </div>
+    </div>
+</div>
+
+<!-- Search -->
+<div class="card mb-3">
+    <div class="card-body py-2">
+        <div class="input-group">
+            <span class="input-group-text bg-white border-end-0">
+                <i class="bi bi-search text-muted"></i>
+            </span>
+            <input type="text" id="searchInput" class="form-control border-start-0"
+                   placeholder="Search by name, ID number or email..." />
+        </div>
+    </div>
+</div>
+
+<!-- Table -->
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0" id="customersTable">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID Number</th>
+                    <th>Full Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Address</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var customer in Model)
+                {
+                    <tr>
+                        <td>
+                            <span class="badge bg-secondary font-monospace">
+                                @customer.IdentificationNumber
+                            </span>
+                        </td>
+                        <td class="fw-semibold">@customer.FullName</td>
+                        <td>
+                            <i class="bi bi-telephone text-muted me-1"></i>@customer.Phone
+                        </td>
+                        <td>
+                            <i class="bi bi-envelope text-muted me-1"></i>@customer.Email
+                        </td>
+                        <td class="text-muted">@customer.Address</td>
+                        <td class="text-center">
+                            <a asp-action="Edit" asp-route-id="@customer.Id"
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-people" style="font-size:3rem"></i>
+                <p class="mt-2">No customers registered yet.</p>
+                <a asp-action="Create" class="btn btn-primary">Add First Customer</a>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('searchInput').addEventListener('input', function () {
+            const filter = this.value.toLowerCase();
+            document.querySelectorAll('#customersTable tbody tr').forEach(row => {
+                row.style.display = row.textContent.toLowerCase().includes(filter) ? '' : 'none';
+            });
+        });
+    </script>
+}

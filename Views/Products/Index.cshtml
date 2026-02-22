@@ -1,0 +1,126 @@
+﻿@model IEnumerable<Product>
+@{
+    ViewData["Title"] = "Productos";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold mb-0">Productos</h3>
+        <small class="text-muted">Gestiona tu inventario</small>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-1"></i>Nuevo Producto
+    </a>
+</div>
+
+<!-- Stats row -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card text-center py-3">
+            <div class="fw-bold fs-2 text-primary">@Model.Count()</div>
+            <div class="text-muted small">Total Productos</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center py-3">
+            <div class="fw-bold fs-2 text-success">@Model.Sum(p => p.StockQuantity)</div>
+            <div class="text-muted small">Total de unidades en stock</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center py-3">
+            <div class="fw-bold fs-2 text-danger">@Model.Count(p => p.StockQuantity == 0)</div>
+            <div class="text-muted small">Agotado</div>
+        </div>
+    </div>
+</div>
+
+<!-- Search -->
+<div class="card mb-3">
+    <div class="card-body py-2">
+        <div class="input-group">
+            <span class="input-group-text bg-white border-end-0">
+                <i class="bi bi-search text-muted"></i>
+            </span>
+            <input type="text" id="searchInput" class="form-control border-start-0"
+                   placeholder="Buscar por código o nombre..." />
+        </div>
+    </div>
+</div>
+
+<!-- Table -->
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0" id="productsTable">
+            <thead class="table-dark">
+                <tr>
+                    <th>Código</th>
+                    <th>Nombre Producto</th>
+                    <th class="text-end">Precio Unitario</th>
+                    <th class="text-center">Stock</th>
+                    <th class="text-center">Estado</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in Model)
+                {
+                    <tr class="@(product.StockQuantity == 0 ? "table-danger" : "")">
+                        <td>
+                            <span class="badge bg-secondary font-monospace">@product.Code</span>
+                        </td>
+                        <td class="fw-semibold">@product.Name</td>
+                        <td class="text-end">$@product.UnitPrice.ToString("N2")</td>
+                        <td class="text-center">
+                            <span class="fw-bold @(product.StockQuantity <= 5 ? "text-danger" :
+                                                                                     product.StockQuantity <= 20 ? "text-warning" : "text-success")">
+                            @product.StockQuantity
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        @if (product.StockQuantity == 0)
+                            {
+                                <span class="badge bg-danger">Out of Stock</span>
+                            }
+                            else if (product.StockQuantity <= 5)
+                            {
+                                <span class="badge bg-warning text-dark">Low Stock</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Available</span>
+                            }
+                        </td>
+                        <td class="text-center">
+                            <a asp-action="Edit" asp-route-id="@product.Id"
+                               class="btn btn-sm btn-outline-primary me-1">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-box-seam" style="font-size:3rem"></i>
+                <p class="mt-2">No hay productos registrados.</p>
+                <a asp-action="Create" class="btn btn-primary">Agregar el primer producto</a>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('searchInput').addEventListener('input', function () {
+            const filter = this.value.toLowerCase();
+            document.querySelectorAll('#productsTable tbody tr').forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            });
+        });
+    </script>
+}

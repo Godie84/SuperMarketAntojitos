@@ -1,0 +1,209 @@
+﻿@model SaleViewModel
+@{
+    ViewData["Title"] = "Nueva Venta";
+}
+
+<div class="container-fluid py-3">
+    <h2 class="mb-4">🛒 Nueva Venta</h2>
+
+    <!-- Customer Search -->
+    <div class="card shadow-sm mb-3">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">1. Cliente</h5>
+        </div>
+        <div class="card-body">
+            <div class="input-group" style="max-width:400px">
+                <input id="inputIdentificationNumber" type="text"
+                       class="form-control"
+                       placeholder="Ingrese No. Identificación del Cliente" />
+                <button class="btn btn-primary" onclick="findCustomer()">
+                    🔍 Buscar
+                </button>
+            </div>
+            <div id="customerInfo" class="mt-2 alert alert-success d-none"></div>
+            <input type="hidden" id="hiddenCustomerId" value="0" />
+        </div>
+    </div>
+
+    <!-- Add Product -->
+    <div class="card shadow-sm mb-3">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">2. Agregar Productos</h5>
+        </div>
+        <div class="card-body row g-2">
+            <div class="col-md-8">
+                <select id="selectProduct" class="form-select">
+                    @foreach (var item in Model.ProductList)
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <input id="inputQuantity" type="number" min="1" value="1"
+                       class="form-control" placeholder="Qty" />
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-success w-100" onclick="addProduct()">
+                    + Agregar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sale Details Table -->
+    <div class="card shadow-sm mb-3">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">3. Resumen de venta</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-striped mb-0" id="tableDetails">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Código</th>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Precio Unitario</th>
+                        <th>Subtotal</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyDetails"></tbody>
+                <tfoot class="table-secondary">
+                    <tr>
+                        <td colspan="4" class="text-end fw-bold fs-5">TOTAL:</td>
+                        <td id="totalAmount" class="fw-bold fs-5 text-success">$0.00</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <button class="btn btn-primary btn-lg w-100" onclick="confirmSale()">
+        ✅ Confirmar Venta
+    </button>
+</div>
+
+@section Scripts {
+    <script>
+        let saleDetails = [];
+
+        // ── Buscar Cliente ─────────────────────────────────────
+        async function findCustomer() {
+            const idNumber = document.getElementById('inputIdentificationNumber').value.trim();
+            if (!idNumber) { alert('Please enter an ID number.'); return; }
+
+            const resp = await fetch(`/Sales/FindCustomer?identificationNumber=${idNumber}`);
+            const data = await resp.json();
+
+            const infoDiv = document.getElementById('customerInfo');
+
+            if (data.found) {
+                document.getElementById('hiddenCustomerId').value = data.id;
+                infoDiv.innerHTML = `✅ <strong>${data.fullName}</strong> — Phone: ${data.phone}`;
+                infoDiv.classList.remove('d-none', 'alert-danger');
+                infoDiv.classList.add('alert-success');
+            } else {
+                infoDiv.innerHTML = `❌ Customer not found.
+                    <a href="/Customers/Create?identificationNumber=${idNumber}&returnUrl=/Sales/Index"
+                       class="btn btn-sm btn-warning ms-2">Register Customer</a>`;
+                infoDiv.classList.remove('d-none', 'alert-success');
+                infoDiv.classList.add('alert-danger');
+            }
+        }
+
+        // ── Agregar Producto ───────────────────────────────────────
+        function addProduct() {
+            const select   = document.getElementById('selectProduct');
+            const option   = select.options[select.selectedIndex];
+            const quantity = parseInt(document.getElementById('inputQuantity').value);
+
+            if (quantity < 1) { alert('Quantity must be at least 1.'); return; }
+
+            // Parse text format: "[CODE] Name - $price"
+            const text      = option.text;
+            const code      = text.match(/\[(.+?)\]/)[1];
+            const namePart  = text.split('] ')[1].split(' - $')[0];
+            const priceString = text.split('$')[1].trim();
+            const normalizedPrice = priceString.replace(/\./g, '').replace(',', '.');
+            const unitPrice = parseFloat(normalizedPrice);
+
+            // Check if product already in list
+            const existing = saleDetails.find(d => d.productId === parseInt(select.value));
+            if (existing) {
+                existing.quantity += quantity;
+                existing.subtotal  = existing.quantity * existing.unitPrice;
+            } else {
+                saleDetails.push({
+                    productId:   parseInt(select.value),
+                    productCode: code,
+                    productName: namePart,
+                    quantity:    quantity,
+                    unitPrice:   unitPrice,
+                    subtotal:    quantity * unitPrice
+                });
+            }
+
+            renderTable();
+        }
+
+        // ── Render Table ──────────────────────────────────────
+                function renderTable() {
+            const tbody = document.getElementById('tbodyDetails');
+
+            tbody.innerHTML = saleDetails.map((d, i) => `
+                <tr>
+                    <td>${d.productCode}</td>
+                    <td>${d.productName}</td>
+                    <td>${d.quantity}</td>
+                    <td>$${d.unitPrice.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: true })}</td>
+                    <td>$${d.subtotal.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: true })}</td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="removeItem(${i})">✕</button>
+                    </td>
+                </tr>
+            `).join('');
+
+            const total = saleDetails.reduce((acc, d) => acc + d.subtotal, 0);
+            document.getElementById('totalAmount').textContent =
+                `$${total.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: true })}`;
+        }
+
+        function removeItem(index) {
+            saleDetails.splice(index, 1);
+            renderTable();
+        }
+
+        // ── Confirm Sale ──────────────────────────────────────
+        async function confirmSale() {
+            const customerId = document.getElementById('hiddenCustomerId').value;
+
+            if (customerId === '0') {
+                alert('Please search and select a customer first.');
+                return;
+            }
+            if (saleDetails.length === 0) {
+                alert('Please add at least one product.');
+                return;
+            }
+
+            const resp = await fetch(`/Sales/ConfirmSale?customerId=${customerId}`, {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify(saleDetails)
+            });
+
+            const data = await resp.json();
+            alert(data.message);
+
+            if (data.success) {
+                saleDetails = [];
+                renderTable();
+                document.getElementById('hiddenCustomerId').value = '0';
+                document.getElementById('customerInfo').classList.add('d-none');
+                document.getElementById('inputIdentificationNumber').value = '';
+            }
+        }
+    </script>
+}

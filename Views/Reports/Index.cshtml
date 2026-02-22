@@ -1,0 +1,99 @@
+﻿@model ReportViewModel
+@{
+    ViewData["Title"] = "Sales Reports";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white d-flex align-items-center gap-2">
+                <i class="bi bi-file-earmark-bar-graph"></i>
+                <span>Generate Sales Report</span>
+            </div>
+            <div class="card-body">
+                <form asp-action="Generate" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Report Period</label>
+                        <div class="row g-2">
+                            @foreach (var type in Enum.GetValues<ReportType>())
+                            {
+                                <div class="col-6">
+                                    <input type="radio" class="btn-check"
+                                           name="ReportType" id="type_@type"
+                                           value="@((int)type)"
+                                           @(type == ReportType.Daily ? "checked" : "") />
+                                    <label class="btn btn-outline-primary w-100" for="type_@type">
+                                        @switch (type)
+                                        {
+                                            case ReportType.Daily:
+                                                {
+                                                    <i class="bi bi-calendar-day me-1"></i>
+                                                    break;
+                                                }
+                                            case ReportType.Weekly:
+                                                {
+
+                                                    <i class="bi bi-calendar-week me-1"></i>
+                                                    break;
+                                                }
+                                            case ReportType.Monthly:
+                                                {
+
+                                                    <i class="bi bi-calendar-month me-1"></i>
+                                                    break;
+                                                }
+                                            case ReportType.Annual:
+                                                {
+
+                                                    <i class="bi bi-calendar3 me-1"></i>
+                                                    break;
+                                                }
+                                        }
+                                        @type
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="form-floating mb-4">
+                        <input asp-for="ReferenceDate" type="date" class="form-control"
+                               value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                        <label asp-for="ReferenceDate">Reference Date</label>
+                        <div class="form-text">
+                            The report will be generated based on the selected period relative to this date.
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Output Format</label>
+                        <div class="d-flex gap-3">
+                            <div class="flex-fill">
+                                <input type="radio" class="btn-check"
+                                       name="Format" id="formatExcel"
+                                       value="0" checked />
+                                <label class="btn btn-outline-success w-100" for="formatExcel">
+                                    <i class="bi bi-file-earmark-excel me-1"></i>Excel
+                                </label>
+                            </div>
+                            <div class="flex-fill">
+                                <input type="radio" class="btn-check"
+                                       name="Format" id="formatPdf"
+                                       value="1" />
+                                <label class="btn btn-outline-danger w-100" for="formatPdf">
+                                    <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">
+                        <i class="bi bi-download me-2"></i>Generate &amp; Download
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
