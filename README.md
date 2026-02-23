@@ -205,7 +205,7 @@ SuperMarketAntojitos/
 
 ## Modelo de Datos
 
-![Modelo](imgages/ER-Diagram.png)
+![Modelo](wwwroot/images/ER-Diagram.png)
 
 ---
 
