@@ -32,7 +32,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login";
-    options.AccessDeniedPath = "/Account/AccessDenied";
+    options.AccessDeniedPath = "/Account/Login";
     options.ExpireTimeSpan = TimeSpan.FromHours(8);
 });
 
@@ -58,6 +58,21 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Sales}/{action=Index}/{id?}");
+    pattern: "{controller=Account}/{action=Login}/{id?}");
+
+// Ejecutar seeder de roles y admin
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        await DbSeeder.SeedAsync(services);
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Error al ejecutar el seeder.");
+    }
+}
 
 app.Run();

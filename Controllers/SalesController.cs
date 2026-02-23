@@ -9,7 +9,7 @@ using SuperMarketAntojitos.Models.Entities;
 
 namespace SuperMarketAntojitos.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Cashier,Admin")]
     public class SalesController : Controller
     {
         private readonly ISaleService _saleService;

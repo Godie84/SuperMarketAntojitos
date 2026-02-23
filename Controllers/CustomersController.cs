@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace SuperMarketAntojitos.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin,Cashier")]
     public class CustomersController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -40,14 +40,14 @@ namespace SuperMarketAntojitos.Controllers
             if (exists)
             {
                 ModelState.AddModelError("IdentificationNumber",
-                    "A customer with this ID number already exists.");
+                    "Ya existe un cliente con este número de identificación.");
                 return View(model);
             }
 
             _context.Customers.Add(model);
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Customer registered successfully.";
+            TempData["Success"] = "Cliente registrado satisfactoriamente.";
 
             return !string.IsNullOrEmpty(returnUrl)
                 ? Redirect(returnUrl)
@@ -68,7 +68,7 @@ namespace SuperMarketAntojitos.Controllers
 
             _context.Customers.Update(model);
             await _context.SaveChangesAsync();
-            TempData["Success"] = "Customer updated successfully.";
+            TempData["Success"] = "Cliente actualizado exitosamente.";
             return RedirectToAction(nameof(Index));
         }
     }

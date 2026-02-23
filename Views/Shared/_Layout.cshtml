@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Antojitos Supermarket</title>
+    <title>@ViewData["Title"] - Antojitos SuperMarket</title>
 
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -162,47 +162,74 @@
 </head>
 <body>
 
-    <!-- ══ Sidebar ══════════════════════════════════════════════════════════ -->
+    <!-- Sidebar -->
     <nav id="sidebar">
         <div class="brand">
             <i class="bi bi-cart4 brand-icon"></i>
-            <div class="brand-text">Antojitos<br /><small style="font-weight:400;font-size:.75rem">Supermarket</small></div>
+            <div class="brand-text">Antojitos<br /><small style="font-weight:400;font-size:.75rem">SuperMarket</small></div>
         </div>
 
         <ul class="nav flex-column pt-2">
-            <li class="nav-section">Main</li>
 
-            <li class="nav-item">
-                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Sales" ? "active" : "")"
-                   asp-controller="Sales" asp-action="Index">
-                    <i class="bi bi-bag-check"></i> New Sale
+            @if (User.IsInRole("Admin"))
+            {
+                <li class="nav-section">Administración</li>
+                <li class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]
+                                       ?.ToString() == "Admin" ? "active" : "")"
+                   asp-controller="Admin" asp-action="Index">
+                    <i class="bi bi-speedometer2"></i> Panel Administrador
                 </a>
             </li>
-
-            <li class="nav-section">Management</li>
-
             <li class="nav-item">
-                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Products" ? "active" : "")"
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]
+                                   ?.ToString() == "Account" ? "active" : "")"
+                   asp-controller="Account" asp-action="Register">
+                    <i class="bi bi-person-plus"></i> Registrar Cajero
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]
+                                   ?.ToString() == "Products" ? "active" : "")"
                    asp-controller="Products" asp-action="Index">
-                    <i class="bi bi-box-seam"></i> Products
+                    <i class="bi bi-box-seam"></i> Productos
                 </a>
             </li>
-
             <li class="nav-item">
-                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Customers" ? "active" : "")"
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]
+                                   ?.ToString() == "Customers" ? "active" : "")"
                    asp-controller="Customers" asp-action="Index">
-                    <i class="bi bi-people"></i> Customers
+                    <i class="bi bi-people"></i> Clientes
                 </a>
             </li>
-
-            <li class="nav-section">Analytics</li>
-
             <li class="nav-item">
-                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Reports" ? "active" : "")"
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]
+                                   ?.ToString() == "Reports" ? "active" : "")"
                    asp-controller="Reports" asp-action="Index">
-                    <i class="bi bi-file-earmark-bar-graph"></i> Reports
+                    <i class="bi bi-file-earmark-bar-graph"></i> Reportes
                 </a>
             </li>
+                        }
+
+            @if (User.IsInRole("Cashier"))
+            {
+                <li class="nav-section">Ventas</li>
+                <li class="nav-item">
+                    <a class="nav-link @(ViewContext.RouteData.Values["controller"]
+                                       ?.ToString() == "Sales" ? "active" : "")"
+                   asp-controller="Sales" asp-action="Index">
+                    <i class="bi bi-bag-check"></i> Registrar Venta
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["controller"]
+                                   ?.ToString() == "Customers" ? "active" : "")"
+                   asp-controller="Customers" asp-action="Index">
+                    <i class="bi bi-people"></i> Clientes
+                </a>
+            </li>
+                        }
+
         </ul>
 
         <!-- User info in sidebar footer -->
@@ -217,7 +244,16 @@
                     </div>
                     <div style="font-size:.8rem;line-height:1.2;overflow:hidden">
                         <div class="text-white fw-semibold text-truncate">@User.Identity.Name</div>
-                        <div style="color:rgba(255,255,255,.5)">Cashier</div>
+                        <div style="color:rgba(255,255,255,.5)">
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <span>Administrador</span>
+                            }
+                            else
+                            {
+                                <span>Cajero</span>
+                            }
+                        </div>
                     </div>
                 </div>
 
@@ -225,14 +261,14 @@
                     @Html.AntiForgeryToken()
                     <button type="submit" class="btn btn-sm w-100"
                             style="background:rgba(255,255,255,.1);color:#fff;border:none">
-                        <i class="bi bi-box-arrow-left"></i> Logout
+                        <i class="bi bi-box-arrow-left"></i> Cerrar Sesión
                     </button>
                 </form>
             }
         </div>
     </nav>
 
-    <!-- ══ Main ══════════════════════════════════════════════════════════════ -->
+    <!-- Main -->
     <div id="main-content">
 
         <!-- Top bar -->

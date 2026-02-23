@@ -5,7 +5,7 @@ using SuperMarketAntojitos.Services.Interfaces;
 
 namespace SuperMarketAntojitos.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class ReportsController : Controller
     {
         private readonly IReportService _reportService;

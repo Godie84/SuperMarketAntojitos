@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace SuperMarketAntojitos.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class ProductsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -30,13 +30,13 @@ namespace SuperMarketAntojitos.Controllers
             bool codeExists = await _context.Products.AnyAsync(p => p.Code == model.Code);
             if (codeExists)
             {
-                ModelState.AddModelError("Code", "A product with this code already exists.");
+                ModelState.AddModelError("Code", "Ya existe un producto con este código.");
                 return View(model);
             }
 
             _context.Products.Add(model);
             await _context.SaveChangesAsync();
-            TempData["Success"] = "Product created successfully.";
+            TempData["Success"] = "Producto creado exitosamente.";
             return RedirectToAction(nameof(Index));
         }
 
@@ -54,7 +54,7 @@ namespace SuperMarketAntojitos.Controllers
 
             _context.Products.Update(model);
             await _context.SaveChangesAsync();
-            TempData["Success"] = "Product updated successfully.";
+            TempData["Success"] = "Producto actualizado exitosamente.";
             return RedirectToAction(nameof(Index));
         }
     }
