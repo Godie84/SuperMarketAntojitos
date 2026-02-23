@@ -136,7 +136,7 @@ El proyecto implementa una arquitectura en capas con los siguientes patrones de 
 
 ## Estructura del Proyecto
 
-```
+```bash
 SuperMarketAntojitos/
 ?
 ??? Controllers/
@@ -203,11 +203,18 @@ SuperMarketAntojitos/
 
 ---
 
-## Modelo de Datos
+## Modelo de Datos - ER
 
 ![Modelo](wwwroot/images/ER-Diagram.png)
 
 ---
+
+## Diagrama de actores y casos de uso
+
+![Caso Uso](wwwroot/images/CasoUso.png)
+
+---
+
 
 ## Requisitos Previos
 
@@ -281,7 +288,7 @@ Presiona **F5** o el botón de Play. Al iniciar, el sistema crea automáticamente 
 
 ## Credenciales por Defecto
 
-```
+```bash
 Administrador
 ?????????????????????????????
 Email:    admin@antojitos.com
@@ -291,15 +298,15 @@ Password: Febrero2026
 ---
 
 ## Roles del Sistema
-
+```bash
 | Rol | Descripción | Acceso |
 |---|---|---|
 | **Admin** | Gerente del supermercado | Productos, Clientes, Reportes, Registro de cajeros |
 | **Cashier** | Personal de caja | Ventas, Consulta de clientes |
-
+```
 ### Flujo de registro de usuarios
 
-```
+```bash
 El administrador inicia sesión
         ?
 Accede al panel de administración
